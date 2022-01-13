@@ -1,8 +1,9 @@
+// Initial Map Step Up 
 let initialMap = L.map("map", {
     center: [37.09, -95.71],
     zoom: 4
   });
-
+//Setting API for the Map 
   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
@@ -12,12 +13,15 @@ let initialMap = L.map("map", {
     accessToken: API_KEY
 }).addTo(initialMap);
 
+//Establish Variable for Data
 let url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson'
 
+//Set Function for Marker Size
 function markerSize(mag){
     return mag * 5;
 }
 
+//Set marker colors based on depth
 function markerColors(i) {
   return i > 50 ? '#f06b6b' :
         i > 40 ? '#f0936b' :
@@ -26,6 +30,7 @@ function markerColors(i) {
         i > 10 ? '#e1f34c' :
                   '#b7f34d';
 };
+//Marker Function and formatting 
 function marker(feature, latlng){
       let mformat = {
         radius: markerSize(feature.properties.mag),
@@ -37,6 +42,7 @@ function marker(feature, latlng){
       }
       return L.circleMarker(latlng, mformat);
     };
+//Legend Function 
 function Legend(map) {
       var leg = L.control({ position: "bottomright"});
       leg.onAdd = function (initialMap) {
@@ -54,15 +60,17 @@ function Legend(map) {
   };
   Legend(initialMap);
 
+//D3 Data call 
 d3.json(url).then(function(res){
     console.log(res)
   
     let quakedata = res.features
         console.log(quakedata)
-    
+// Loop through data and call markers
         quakedata.forEach(function(res2){
             L.geoJSON(res2,{
               pointToLayer: marker
-            }).bindPopup("<br>Location: " + res2.properties.place + "<br>Magnitude: " + res2.properties.mag).addTo(initialMap)
+//Tool Tip when circle marker is clicked
+            }).bindPopup("<br>Location: " + res2.properties.place + "<br>Magnitude: " + res2.properties.mag + "<br>Depth: " + res2.geometry.coordinates[2]).addTo(initialMap)
           })
         });
