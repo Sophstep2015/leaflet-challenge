@@ -66,10 +66,12 @@ d3.json(url).then(function(res){
   
     let quakedata = res.features
         console.log(quakedata)
+        
 // Loop through data and call markers
         quakedata.forEach(function(res2){
             L.geoJSON(res2,{
               pointToLayer: marker
+
 //Tool Tip when circle marker is clicked
             }).bindPopup("<br>Location: " + res2.properties.place + "<br>Magnitude: " + res2.properties.mag + "<br>Depth: " + res2.geometry.coordinates[2]).addTo(initialMap)
           })
